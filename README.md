@@ -231,7 +231,7 @@ AttendAI/
 ## Clone Repository
 
 ```bash
-git clone https://github.com/yourusername/AttendAI.git
+git clone https://github.com/rutikavhad/FaceHR--AI-Attendance---Payroll-System.git
 
 cd AttendAI
 ```
@@ -367,7 +367,7 @@ Distributed under the MIT License.
 
 # 👨‍💻 Author
 
-**Vivek Patil**
+**Rutik Avhad**
 
 Python Developer | Cybersecurity Enthusiast | AI Application Developer
 
