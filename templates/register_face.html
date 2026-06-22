@@ -1,0 +1,56 @@
+<!-- register_face.html (enhanced) -->
+{% extends "base.html" %}
+
+{% block title %}Register Face - AttendPro{% endblock %}
+{% block page_title %}Face Registration{% endblock %}
+{% block breadcrumb %}Management / Register Face / {{ employee.name }}{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 40px 20px; max-width: 500px; margin: 0 auto;">
+    <div style="font-size: 64px; color: var(--primary); margin-bottom: 16px;">
+        <i class="fas fa-user-circle"></i>
+    </div>
+    <div style="background: var(--gray-50); padding: 24px; border-radius: var(--radius); margin-bottom: 24px;">
+        <h3 style="font-size: 20px;">{{ employee.name }}</h3>
+        <p style="color: var(--gray-500);">UID: <strong>{{ employee.uid }}</strong></p>
+        <p style="color: var(--gray-500);">Position: {{ employee.position or 'N/A' }}</p>
+    </div>
+
+    <p style="color: var(--gray-600); margin-bottom: 16px;">Click the button below to register face for this employee.</p>
+
+    <button onclick="startRegister()" class="face-register-btn">
+        <i class="fas fa-camera"></i> Open Camera & Register Face
+    </button>
+
+    <div id="result" style="margin-top: 24px; font-size: 18px; font-weight: 500; min-height: 40px;"></div>
+
+    <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <a href="{{ url_for('register_face_list') }}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
+        <a href="{{ url_for('employees') }}" class="btn btn-outline"><i class="fas fa-users"></i> All Employees</a>
+    </div>
+</div>
+
+<script>
+function startRegister(){
+    const resultDiv = document.getElementById("result");
+    resultDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opening camera... Please allow camera access.';
+    resultDiv.style.color = "var(--gray-600)";
+
+    fetch("/api/register-face/{{ employee.uid }}")
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            resultDiv.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i> ' + data.message;
+            resultDiv.style.color = "var(--success)";
+        } else {
+            resultDiv.innerHTML = '<i class="fas fa-times-circle" style="color: var(--danger);"></i> ' + data.message;
+            resultDiv.style.color = "var(--danger)";
+        }
+    })
+    .catch(err => {
+        resultDiv.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i> Error: ' + err.message;
+        resultDiv.style.color = "var(--danger)";
+    });
+}
+</script>
+{% endblock %}

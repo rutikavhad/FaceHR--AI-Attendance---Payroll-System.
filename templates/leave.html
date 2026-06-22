@@ -1,0 +1,65 @@
+<!-- leave.html (enhanced) -->
+{% extends "base.html" %}
+
+{% block title %}Leave Management - AttendPro{% endblock %}
+{% block page_title %}Leave Management{% endblock %}
+{% block breadcrumb %}Management / Leave{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fas fa-calendar-minus"></i> Mark Leave / Absent</h3>
+        <span style="font-size: 14px; color: var(--gray-500);">Date: {{ today }}</span>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>UID</th>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Remarks</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emp in records %}
+                <tr>
+                    <form method="POST" action="{{ url_for('mark_leave', uid=emp.uid) }}">
+                        <td><strong>{{ emp.uid }}</strong></td>
+                        <td>{{ emp.name }}</td>
+                        <td><span class="badge badge-info">{{ emp.position or 'N/A' }}</span></td>
+                        <td>
+                            <input type="date" name="attendance_date" class="form-control" value="{{ today }}" style="width: 160px;" required>
+                        </td>
+                        <td>
+                            <select name="status" class="form-control" style="width: 140px;">
+                                <option value="Paid Leave">Paid Leave</option>
+                                <option value="Unpaid Leave">Unpaid Leave</option>
+                                <option value="Sick Leave">Sick Leave</option>
+                                <option value="Absent">Absent</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" name="remarks" class="form-control" placeholder="Optional remarks" style="width: 150px;">
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Save</button>
+                        </td>
+                    </form>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" style="text-align: center; color: var(--gray-500); padding: 40px 0;">
+                        <i class="fas fa-users-slash" style="font-size: 32px; display: block; margin-bottom: 8px;"></i>
+                        No employees found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

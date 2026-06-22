@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Attendance System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header .icon {
+            font-size: 48px;
+            color: #2563eb;
+            margin-bottom: 8px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .video-wrapper {
+            position: relative;
+            background: #0f172a;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            height: auto;
+            display: block;
+            background: #0f172a;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(4px);
+            pointer-events: none;
+        }
+
+        .video-overlay .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.8); }
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0px);
+        }
+
+        .btn-success {
+            background: #22c55e;
+            color: white;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+        }
+
+        .btn-success:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45);
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn i {
+            font-size: 18px;
+        }
+
+        .result-card {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 24px;
+            min-height: 120px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.4s ease;
+            text-align: center;
+        }
+
+        .result-card.has-result {
+            border-color: #2563eb;
+            background: white;
+        }
+
+        .result-card .employee-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .result-card .avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .result-card .employee-details {
+            text-align: left;
+        }
+
+        .result-card .employee-details .name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .result-card .employee-details .uid {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .result-card .employee-details .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .status-badge.login {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-badge.logout {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-badge.completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge.error {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .result-card .time-info {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin: 16px 0;
+            flex-wrap: wrap;
+        }
+
+        .result-card .time-info .time-item {
+            text-align: center;
+        }
+
+        .result-card .time-info .time-item .label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-card .time-info .time-item .value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .result-card .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .placeholder-text {
+            color: #94a3b8;
+            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .placeholder-text i {
+            font-size: 40px;
+            opacity: 0.3;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(37, 99, 235, 0.2);
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: #22c55e;
+        }
+
+        .toast.error {
+            background: #ef4444;
+        }
+
+        .toast.info {
+            background: #3b82f6;
+        }
+
+        .toast i {
+            font-size: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 14px;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .result-card .employee-details {
+                text-align: center;
+            }
+
+            .result-card .employee-info {
+                flex-direction: column;
+            }
+
+            .result-card .time-info {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .toast {
+                left: 20px;
+                right: 20px;
+                bottom: 20px;
+                font-size: 13px;
+                padding: 14px 18px;
+            }
+        }
+
+        /* Canvas hidden */
+        #canvas {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="icon"><i class="fas fa-user-check"></i></div>
+            <h1>Face Attendance System</h1>
+            <p>Position your face in front of the camera and click <strong>Mark Attendance</strong></p>
+        </div>
+
+        <!-- Video -->
+        <div class="video-wrapper">
+            <video id="video" width="640" height="480" autoplay playsinline></video>
+            <div class="video-overlay">
+                <span class="dot"></span>
+                <span>Live Camera</span>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button class="btn btn-primary" onclick="capture()" id="markBtn">
+                <i class="fas fa-camera"></i> Mark Attendance
+            </button>
+        </div>
+
+        <!-- Result -->
+        <div class="result-card" id="resultCard">
+            <div class="placeholder-text" id="placeholder">
+                <i class="fas fa-user-circle"></i>
+                <span>Waiting for face recognition...</span>
+            </div>
+            <div id="resultContent" style="display: none;"></div>
+        </div>
+    </div>
+
+    <canvas id="canvas" width="640" height="480"></canvas>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Success</span>
+    </div>
+
+    <script>
+        const video = document.getElementById("video");
+        const canvas = document.getElementById("canvas");
+        const resultCard = document.getElementById("resultCard");
+        const resultContent = document.getElementById("resultContent");
+        const placeholder = document.getElementById("placeholder");
+        const markBtn = document.getElementById("markBtn");
+
+        // Start camera
+        navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "user", width: 640, height: 480 }
+        })
+        .then(stream => {
+            video.srcObject = stream;
+        })
+        .catch(err => {
+            showToast("Camera access denied. Please allow camera permissions.", "error");
+            markBtn.disabled = true;
+            markBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> No Camera';
+        });
+
+        function showToast(message, type = "info") {
+            const toast = document.getElementById("toast");
+            const toastMessage = document.getElementById("toastMessage");
+            toast.className = "toast " + type;
+            toastMessage.textContent = message;
+
+            // Set icon
+            const icon = toast.querySelector("i");
+            if (type === "success") icon.className = "fas fa-check-circle";
+            else if (type === "error") icon.className = "fas fa-times-circle";
+            else icon.className = "fas fa-info-circle";
+
+            toast.classList.add("show");
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove("show");
+            }, 4000);
+        }
+
+        function setLoading(isLoading) {
+            if (isLoading) {
+                markBtn.disabled = true;
+                markBtn.innerHTML = '<span class="loading-spinner"></span> Processing...';
+            } else {
+                markBtn.disabled = false;
+                markBtn.innerHTML = '<i class="fas fa-camera"></i> Mark Attendance';
+            }
+        }
+
+        function displayResult(data) {
+            resultCard.classList.add("has-result");
+            placeholder.style.display = "none";
+            resultContent.style.display = "block";
+
+            let html = '';
+
+            // Employee info
+            if (data.name && data.uid) {
+                const initials = data.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                html += `
+                    <div class="employee-info">
+                        <div class="avatar">${initials}</div>
+                        <div class="employee-details">
+                            <div class="name">${data.name}</div>
+                            <div class="uid">UID: ${data.uid}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Status badge
+            let badgeClass = "completed";
+            let badgeText = "Completed";
+
+            if (data.action === "login") {
+                badgeClass = "login";
+                badgeText = "Ready to Login";
+            } else if (data.action === "logout") {
+                badgeClass = "logout";
+                badgeText = "Ready to Logout";
+            } else if (data.action === "completed") {
+                badgeClass = "completed";
+                badgeText = "✓ Attendance Completed";
+            } else if (data.action === "error") {
+                badgeClass = "error";
+                badgeText = "⚠ " + (data.message || "Error");
+            }
+
+            html += `<div class="status-badge ${badgeClass}">${badgeText}</div>`;
+
+            // Time info
+            if (data.login_time || data.logout_time) {
+                html += `<div class="time-info">`;
+                if (data.login_time) {
+                    html += `
+                        <div class="time-item">
+                            <div class="label"><i class="fas fa-sign-in-alt"></i> Login</div>
+                            <div class="value">${data.login_time}</div>
+                        </div>
+                    `;
+                }
+                if (data.logout_time) {
+                    html += `
+                        <div class="time-item">
+                            <div class="label"><i class="fas fa-sign-out-alt"></i> Logout</div>
+                            <div class="value">${data.logout_time}</div>
+                        </div>
+                    `;
+                }
+                if (data.total_work) {
+                    html += `
+                        <div class="time-item">
+                            <div class="label"><i class="fas fa-clock"></i> Total Work</div>
+                            <div class="value">${data.total_work}</div>
+                        </div>
+                    `;
+                }
+                html += `</div>`;
+            }
+
+            // Error message
+            if (data.action === "error" && data.message) {
+                html += `<p style="color: #ef4444; margin-top: 8px;">${data.message}</p>`;
+            }
+
+            // Actions
+            if (data.action === "login") {
+                html += `
+                    <div class="actions">
+                        <button class="btn btn-success" onclick="doLogin(${data.uid})">
+                            <i class="fas fa-sign-in-alt"></i> Check In
+                        </button>
+                    </div>
+                `;
+            } else if (data.action === "logout") {
+                html += `
+                    <div class="actions">
+                        <button class="btn btn-danger" onclick="doLogout(${data.uid})">
+                            <i class="fas fa-sign-out-alt"></i> Check Out
+                        </button>
+                    </div>
+                `;
+            }
+
+            resultContent.innerHTML = html;
+        }
+
+        function capture() {
+            const resultDiv = document.getElementById("result");
+            setLoading(true);
+
+            // Show loading in result
+            placeholder.style.display = "none";
+            resultContent.style.display = "block";
+            resultContent.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <span class="loading-spinner"></span>
+                    <p style="color: #64748b; margin-top: 12px;">Recognizing face...</p>
+                </div>
+            `;
+            resultCard.classList.add("has-result");
+
+            fetch("/api/recognize", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ test: "ok" })
+            })
+            .then(r => {
+                if (!r.ok) throw new Error("Server error: " + r.status);
+                return r.json();
+            })
+            .then(data => {
+                setLoading(false);
+                displayResult(data);
+                if (data.action === "completed") {
+                    showToast("Attendance completed for " + data.name, "success");
+                } else if (data.action === "login") {
+                    showToast("Welcome " + data.name + "! Please check in.", "info");
+                } else if (data.action === "logout") {
+                    showToast("Ready to check out " + data.name, "info");
+                } else if (data.action === "error") {
+                    showToast(data.message || "Face not recognized", "error");
+                }
+            })
+            .catch(err => {
+                setLoading(false);
+                showToast("Error: " + err.message, "error");
+                resultContent.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #ef4444;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 32px;"></i>
+                        <p style="margin-top: 8px;">${err.message}</p>
+                        <button class="btn btn-primary" style="margin-top: 12px; padding: 8px 20px; font-size: 14px;" onclick="capture()">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function doLogin(uid) {
+            const btn = document.querySelector('.btn-success');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loading-spinner"></span> Processing...';
+            }
+
+            fetch("/api/do-login/" + uid, {
+                method: "POST"
+            })
+            .then(r => r.json())
+            .then(data => {
+                showToast(data.message || "Login successful!", "success");
+                setTimeout(() => location.reload(), 1500);
+            })
+            .catch(err => {
+                showToast("Error: " + err.message, "error");
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Check In';
+                }
+            });
+        }
+
+        function doLogout(uid) {
+            const btn = document.querySelector('.btn-danger');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loading-spinner"></span> Processing...';
+            }
+
+            fetch("/api/do-logout/" + uid, {
+                method: "POST"
+            })
+            .then(r => r.json())
+            .then(data => {
+                showToast(data.message || "Logout successful!", "success");
+                setTimeout(() => location.reload(), 1500);
+            })
+            .catch(err => {
+                showToast("Error: " + err.message, "error");
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Check Out';
+                }
+            });
+        }
+
+        // Keyboard shortcut: Enter key to mark attendance
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !markBtn.disabled) {
+                capture();
+            }
+        });
+
+        // Auto-capture on page load (optional - uncomment to enable)
+        // setTimeout(capture, 2000);
+    </script>
+
+</body>
+</html>

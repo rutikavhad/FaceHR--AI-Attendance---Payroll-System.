@@ -1,0 +1,74 @@
+<!-- dashboard.html (enhanced) -->
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AttendPro{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block breadcrumb %}Home / Dashboard{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card total">
+        <span class="stat-icon"><i class="fas fa-users"></i></span>
+        <div class="stat-label">Total Employees</div>
+        <div class="stat-value">{{ total_employees }}</div>
+    </div>
+    <div class="stat-card present">
+        <span class="stat-icon"><i class="fas fa-check-circle"></i></span>
+        <div class="stat-label">Present Today</div>
+        <div class="stat-value">{{ present }}</div>
+    </div>
+    <div class="stat-card halfday">
+        <span class="stat-icon"><i class="fas fa-clock"></i></span>
+        <div class="stat-label">Half Day</div>
+        <div class="stat-value">{{ half_day }}</div>
+    </div>
+    <div class="stat-card absent">
+        <span class="stat-icon"><i class="fas fa-times-circle"></i></span>
+        <div class="stat-label">Absent</div>
+        <div class="stat-value">{{ absent }}</div>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-icon"><i class="fas fa-calendar-check"></i></span>
+        <div class="stat-label">Paid Leave</div>
+        <div class="stat-value" style="color: var(--info);">{{ paid_leave }}</div>
+    </div>
+    <div class="stat-card">
+        <span class="stat-icon"><i class="fas fa-calendar-times"></i></span>
+        <div class="stat-label">Unpaid Leave</div>
+        <div class="stat-value" style="color: var(--warning);">{{ unpaid_leave }}</div>
+    </div>
+    <div class="stat-card">
+        <span class="stat-icon"><i class="fas fa-thermometer-half"></i></span>
+        <div class="stat-label">Sick Leave</div>
+        <div class="stat-value" style="color: var(--danger);">{{ sick_leave }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fas fa-bolt" style="color: var(--primary);"></i> Quick Actions</h3>
+    </div>
+    <div class="card-body" style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a href="{{ url_for('attendance_page') }}" class="btn btn-primary"><i class="fas fa-calendar-check"></i> View Attendance</a>
+        <a href="{{ url_for('manual_attendance') }}" class="btn btn-warning"><i class="fas fa-pencil-alt"></i> Manual Attendance</a>
+        <a href="{{ url_for('kiosk') }}" class="btn btn-success"><i class="fas fa-camera"></i> Face Kiosk</a>
+        <a href="{{ url_for('employees') }}" class="btn btn-outline"><i class="fas fa-users"></i> Manage Employees</a>
+        <a href="{{ url_for('register_face_list') }}" class="btn btn-outline"><i class="fas fa-user-plus"></i> Register Face</a>
+        <a href="{{ url_for('reports') }}" class="btn btn-outline"><i class="fas fa-file-alt"></i> Reports</a>
+        <a href="{{ url_for('payroll') }}" class="btn btn-outline"><i class="fas fa-coins"></i> Payroll</a>
+        <a href="{{ url_for('employee_summary') }}" class="btn btn-outline"><i class="fas fa-chart-bar"></i> Summary</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fas fa-download" style="color: var(--success);"></i> Export Data</h3>
+    </div>
+    <div class="card-body" style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a href="{{ url_for('export_summary') }}" class="btn btn-success"><i class="fas fa-file-excel"></i> Download Summary Excel</a>
+    </div>
+</div>
+{% endblock %}

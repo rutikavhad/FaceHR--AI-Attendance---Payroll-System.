@@ -1,0 +1,68 @@
+<!-- manual_attendance.html (enhanced) -->
+{% extends "base.html" %}
+
+{% block title %}Manual Attendance - AttendPro{% endblock %}
+{% block page_title %}Manual Attendance{% endblock %}
+{% block breadcrumb %}Attendance / Manual{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fas fa-pencil-alt"></i> Manual Check-in / Check-out</h3>
+        <span style="font-size: 14px; color: var(--gray-500);">Today: {{ current_date or 'N/A' }}</span>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>UID</th>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Status</th>
+                    <th>Login</th>
+                    <th>Logout</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emp in employees %}
+                {% set att = attendance_map.get(emp.uid) %}
+                <tr>
+                    <td><strong>{{ emp.uid }}</strong></td>
+                    <td>{{ emp.name }}</td>
+                    <td><span class="badge badge-info">{{ emp.position or 'N/A' }}</span></td>
+                    <td>
+                        {% if att %}
+                            {% if att.status == 'Present' %}
+                                <span class="badge badge-success">Present</span>
+                            {% elif att.status == 'Half Day' %}
+                                <span class="badge badge-warning">Half Day</span>
+                            {% else %}
+                                <span class="badge badge-secondary">{{ att.status }}</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="badge badge-secondary">Not Marked</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ att.login_time or '-' }}</td>
+                    <td>{{ att.logout_time or '-' }}</td>
+                    <td>
+                        <div class="action-links">
+                            <a href="{{ url_for('manual_checkin', uid=emp.uid) }}" class="btn btn-success btn-sm"><i class="fas fa-sign-in-alt"></i> Check In</a>
+                            <a href="{{ url_for('manual_checkout', uid=emp.uid) }}" class="btn btn-danger btn-sm"><i class="fas fa-sign-out-alt"></i> Check Out</a>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" style="text-align: center; color: var(--gray-500); padding: 40px 0;">
+                        <i class="fas fa-users-slash" style="font-size: 32px; display: block; margin-bottom: 8px;"></i>
+                        No employees found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

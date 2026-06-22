@@ -1,0 +1,52 @@
+<!-- employee_summary.html (enhanced) -->
+{% extends "base.html" %}
+
+{% block title %}Employee Summary - AttendPro{% endblock %}
+{% block page_title %}Employee Summary{% endblock %}
+{% block breadcrumb %}Reports / Employee Summary{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fas fa-chart-bar"></i> Employee Attendance Summary</h3>
+        <a href="{{ url_for('export_summary') }}" class="btn btn-success btn-sm"><i class="fas fa-file-excel"></i> Download Excel</a>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>UID</th>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Present</th>
+                    <th>Half Day</th>
+                    <th>Paid Leave</th>
+                    <th>Unpaid Leave</th>
+                    <th>Sick Leave</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in summaries %}
+                <tr>
+                    <td><strong>{{ row.employee.uid }}</strong></td>
+                    <td>{{ row.employee.name }}</td>
+                    <td><span class="badge badge-info">{{ row.employee.position or 'N/A' }}</span></td>
+                    <td><span class="badge badge-success">{{ row.present }}</span></td>
+                    <td><span class="badge badge-warning">{{ row.half_day }}</span></td>
+                    <td><span class="badge badge-info">{{ row.paid_leave }}</span></td>
+                    <td><span class="badge badge-secondary">{{ row.unpaid_leave }}</span></td>
+                    <td><span class="badge badge-danger">{{ row.sick_leave }}</span></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" style="text-align: center; color: var(--gray-500); padding: 40px 0;">
+                        <i class="fas fa-inbox" style="font-size: 32px; display: block; margin-bottom: 8px;"></i>
+                        No summary data available.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

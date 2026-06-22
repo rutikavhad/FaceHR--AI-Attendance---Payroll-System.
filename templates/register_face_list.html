@@ -1,0 +1,46 @@
+<!-- register_face_list.html (enhanced) -->
+{% extends "base.html" %}
+
+{% block title %}Register Face - AttendPro{% endblock %}
+{% block page_title %}Face Registration{% endblock %}
+{% block breadcrumb %}Management / Register Face{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fas fa-user-plus"></i> Register Employee Face</h3>
+        <span style="font-size: 14px; color: var(--gray-500);">Select an employee to register their face</span>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>UID</th>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emp in employees %}
+                <tr>
+                    <td><strong>{{ emp.uid }}</strong></td>
+                    <td>{{ emp.name }}</td>
+                    <td><span class="badge badge-info">{{ emp.position or 'N/A' }}</span></td>
+                    <td>
+                        <a href="{{ url_for('register_face', uid=emp.uid) }}" class="btn btn-primary btn-sm"><i class="fas fa-camera"></i> Register Face</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center; color: var(--gray-500); padding: 40px 0;">
+                        <i class="fas fa-users-slash" style="font-size: 32px; display: block; margin-bottom: 8px;"></i>
+                        No employees found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
